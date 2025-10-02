@@ -26,15 +26,15 @@ class RealtorScraperOrchestrator:
 
     Architecture:
     - Agent 1: Selenium browser automation for realtor.ca (handles JavaScript)
-    - Agent 2: Haiku-powered website enrichment with batching
-    - Agent 3: Haiku-powered web search completion with batching
+    - Agent 2: powered website enrichment with batching
+    - Agent 3: powered web search completion with batching
     """
 
     def __init__(self):
         self.client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
-        self.enrichment_model = "claude-3-5-haiku-20241022"  # Fast & cheap for enrichment
+        self.enrichment_model = "claude-sonnet-4-5-20250929"  # Fast & cheap for enrichment
         self.last_request_time = 0
-        self.min_request_interval = 1  # Haiku can handle faster requests
+        self.min_request_interval = 1  # can handle faster requests
         self.batch_size = 20  # Process 20 realtors per API call
 
         # Create output directories
@@ -136,10 +136,10 @@ class RealtorScraperOrchestrator:
 
     def agent_2_enrichment(self, input_file: str) -> str:
         """
-        Agent 2: Website Enrichment Agent (Haiku-powered with batching)
+        Agent 2: Website Enrichment Agent (powered with batching)
         Processes realtors in batches to find missing emails on their websites.
         """
-        print("\n=== Agent 2: Website Enrichment Agent (Haiku) ===")
+        print("\n=== Agent 2: Website Enrichment Agent ===")
         print("Enriching contact data from personal websites...")
 
         # Read input CSV
@@ -227,10 +227,10 @@ Only output observed data - no hallucinations."""
 
     def agent_3_completion(self, input_file: str) -> str:
         """
-        Agent 3: Web Search Completion Agent (Haiku-powered with batching)
+        Agent 3: Web Search Completion Agent (powered with batching)
         Uses broader web search to fill remaining gaps with confidence scores.
         """
-        print("\n=== Agent 3: Web Search Completion Agent (Haiku) ===")
+        print("\n=== Agent 3: Web Search Completion Agent ===")
         print("Completing missing data via web search...")
 
         # Read input CSV
@@ -324,8 +324,8 @@ Only output observed data."""
         print("=" * 60)
         print("Target: Saskatchewan realtors from realtor.ca")
         print("Agent 1: Selenium Browser Automation")
-        print("Agent 2: Haiku-powered Website Enrichment (batched)")
-        print("Agent 3: Haiku-powered Web Search Completion (batched)")
+        print("Agent 2: powered Website Enrichment (batched)")
+        print("Agent 3: powered Web Search Completion (batched)")
         print("=" * 60)
 
         start_time = time.time()
@@ -333,12 +333,13 @@ Only output observed data."""
         try:
             # Agent 1: Selenium scraping
             scraper_output = self.agent_1_selenium_scraper()
+            scraper_output = "scraper-output.csv"
 
-            # Agent 2: Website enrichment with Haiku
-            enrichment_output = self.agent_2_enrichment(scraper_output)
-
-            # Agent 3: Web search completion with Haiku
-            final_output = self.agent_3_completion(enrichment_output)
+            # # Agent 2: Website enrichment with
+            # enrichment_output = self.agent_2_enrichment(scraper_output)
+            #
+            # # Agent 3: Web search completion with
+            # final_output = self.agent_3_completion(enrichment_output)
 
             elapsed = time.time() - start_time
 

@@ -2,6 +2,7 @@ import datetime
 import json
 import time
 import csv
+import string
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -16,9 +17,9 @@ from bs4 import BeautifulSoup
 class RealtorScraper:
     def scrape(self):
         """
-                Agent 1: Network Traffic Listener
-                Launches browser, intercepts GetRealtorResults API responses, and parses the HTML.
-                """
+        Agent 1: Network Traffic Listener
+        Launches browser, intercepts GetRealtorResults API responses, and parses the HTML.
+        """
         num_realtors = 0
 
         print("\n=== Agent 1: Network Traffic Listener ===")
@@ -28,35 +29,42 @@ class RealtorScraper:
         realtors = []
         driver = None
 
+        alphabet = string.ascii_lowercase
         try:
-            driver = self._setup_driver()
+            for letter in alphabet:
 
-            # Enable network monitoring (no interception - just monitoring)
-            driver.execute_cdp_cmd('Network.enable', {})
+                driver = self._setup_driver()
 
-            # Navigate to Saskatchewan realtor search
-            url = "https://www.realtor.ca/realtor-search-results#province=7"
-            print(f"Navigating to {url}")
+                # Enable network monitoring (no interception - just monitoring)
+                driver.execute_cdp_cmd('Network.enable', {})
 
-            driver.get(url)
+                # Navigate to Saskatchewan realtor search
+                url = f"https://www.realtor.ca/realtor-search-results#firstname={letter}&province=7"
+                print(f"Navigating to {url}")
 
-            new_realtors = self._scrape_page(driver)
-            while len(new_realtors) > 0:
-                realtors += new_realtors
-                self._click_next(driver)
+                driver.get(url)
+
                 new_realtors = self._scrape_page(driver)
+                while len(new_realtors) > 0:
+                    realtors += new_realtors
+                    self._click_next(driver)
+                    new_realtors = self._scrape_page(driver)
 
-            # Remove duplicates (based on name)
-            seen_names = set()
-            unique_realtors = []
-            for r in realtors:
-                if r['name'] and r['name'] not in seen_names:
-                    seen_names.add(r['name'])
-                    unique_realtors.append(r)
+                # Remove duplicates (based on name)
+                seen_names = set()
+                unique_realtors = []
+                for r in realtors:
+                    if r['name'] and r['name'] not in seen_names:
+                        seen_names.add(r['name'])
+                        unique_realtors.append(r)
 
-            realtors = unique_realtors
-            num_realtors += len(unique_realtors)
-            print(f"\n✓ Extracted {len(realtors)} unique realtor records from API responses")
+                realtors = unique_realtors
+                num_realtors += len(unique_realtors)
+                print(f"\n✓ Extracted {len(realtors)} unique realtor records from API responses")
+
+                if driver:
+                    driver.close()
+                    print("✓ Browser closed")
 
         except Exception as e:
             print(f"Error during scraping: {str(e)}")
@@ -89,7 +97,7 @@ class RealtorScraper:
     def _scrape_page(self, driver):
         # Wait for page to fully load
         print("Waiting for page to load...")
-        time.sleep(4)
+        time.sleep(2)
 
         timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
         captured_count = 0
@@ -154,7 +162,7 @@ class RealtorScraper:
         for scroll_attempt in range(20):  # Try up to 20 scrolls
             # Scroll down
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            time.sleep(2)
+            time.sleep(1)
 
             # Capture any new API responses
             capture_api_responses()
@@ -270,7 +278,7 @@ class RealtorScraper:
             if next_button:
                 print("Clicking next page button...")
                 next_button.click()
-                time.sleep(3)
+                time.sleep(2)
         except Exception:
             print("No pagination button found")
 
