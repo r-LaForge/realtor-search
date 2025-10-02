@@ -25,7 +25,7 @@ class RealtorScraper:
         print("\n=== Agent 1: Network Traffic Listener ===")
         print("Launching browser to intercept API responses...")
 
-        output_file = "scraper-output-1.csv"
+        output_file = "scraper-output-all.csv"
         realtors = []
         driver = None
 
