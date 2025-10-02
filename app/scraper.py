@@ -332,11 +332,11 @@ Only output observed data."""
 
         try:
             # Agent 1: Selenium scraping
-            scraper_output = self.agent_1_selenium_scraper()
-            scraper_output = "scraper-output.csv"
+            # scraper_output = self.agent_1_selenium_scraper()
+            # scraper_output = "scraper-output.csv"
 
-            # # Agent 2: Website enrichment with
-            # enrichment_output = self.agent_2_enrichment(scraper_output)
+            # Agent 2: Website enrichment with
+            enrichment_output = self.agent_2_enrichment("scraper-output/chunks/chunk-2.csv")
             #
             # # Agent 3: Web search completion with
             # final_output = self.agent_3_completion(enrichment_output)
